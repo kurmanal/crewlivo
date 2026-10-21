@@ -5,7 +5,7 @@
 </style></head><body>
 <header><div class="head"><div class="brand"><span class="logo">✦</span> Crewlivo <span style="font-size:11px;font-weight:500;color:#9ac6c9">FOR CLEANERS</span></div><div class="topline"><div><h1 id="greet">Employee Portal</h1><p id="dateText">Secure employee access</p></div><button id="logout" class="smallbutton hidden" type="button">Sign out</button></div></div></header>
 <main>
-<section id="authView"><div class="block"><div class="authhead"><h2>Sign in</h2><div class="sub">Use the employee email and password created in Crewlivo's Supabase project.</div></div><form id="loginForm"><div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="username" required placeholder="name@example.com"></div><div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div><div class="form-actions"><button id="loginButton" class="btn" type="submit" style="width:100%">Sign in</button></div></form><div id="authMessage" class="status" role="status" aria-live="polite"></div><button class="link" id="resetPassword" type="button">Forgot password?</button></div><p class="note">Only employees linked to a Crewlivo company and assigned to a job can see that job. Do not use real client data until all production security checks are complete.</p></section>
+<section id="authView"><div class="block"><div class="authhead"><h2>Sign in</h2><div class="sub">Use the employee email and password created in Crewlivo's Supabase project.</div></div><form id="loginForm"><div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="username" required placeholder="name@example.com"></div><div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div><div class="form-actions"><button id="loginButton" class="btn" type="submit" style="width:100%">Sign in</button></div></form><div id="authMessage" class="status" role="status" aria-live="polite"></div><button class="link" id="resetPassword" type="button">Forgot password?</button><div class="sub">Are you a company owner? <a href="../">Open Owner Dashboard</a></div></div><p class="note">Only employees linked to a Crewlivo company and assigned to a job can see that job. Do not use real client data until all production security checks are complete.</p></section>
 <div id="mainApp" class="hidden"><div id="message" role="status" aria-live="polite"></div><section id="jobsView"><div class="stats"><div class="block stat"><b id="jobCount">0</b><small>Upcoming jobs</small></div><div class="block stat"><b id="hourCount">0h</b><small>Recorded hours</small></div></div><h2 class="sectiontitle">My assigned cleanings</h2><div id="jobList" class="load">Loading assigned jobs…</div><button id="refresh" class="btn light" style="width:100%">↻ Refresh jobs</button></section><section id="hoursView" class="hidden"><h2 class="sectiontitle">My time entries</h2><div class="block"><div id="timeList"></div></div><p class="note">All timestamps are recorded by the database. Owners will review pay and any timesheet corrections separately.</p></section><section id="profileView" class="hidden"><h2 class="sectiontitle">My profile</h2><div class="block" id="profile"></div></section></div>
 </main><nav class="nav hidden" id="nav"><div class="navinner"><button class="selected" data-view="jobsView">▣<div>My Jobs</div></button><button data-view="hoursView">◷<div>Hours</div></button><button data-view="profileView">♙<div>Profile</div></button></div></nav>
 <script type="module">
@@ -19,6 +19,19 @@ const datefmt=v=>new Date(v).toLocaleDateString('en-US',{weekday:'short',month:'
 const timefmt=v=>new Date(v).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
 const elapsed=t=>t.checked_in_at&&t.checked_out_at?Math.max(0,(new Date(t.checked_out_at)-new Date(t.checked_in_at))/3600000):0;
 let jobs=[], entries=[], user=null, loading=false;
+// Authentication and authorization are separate: only active cleaner members may enter.
+async function requireCleaner(account) {
+  if (!account?.id) throw new Error('Please sign in as an employee.');
+  const {data,error}=await sb.from('company_members')
+    .select('company_id,role')
+    .eq('user_id',account.id)
+    .eq('role','cleaner')
+    .limit(1);
+  if(error) throw new Error('Unable to verify employee access: '+error.message);
+  if(!data?.length) throw new Error('This account is not registered as a cleaner. Owners and managers should use the Owner Dashboard.');
+  return data[0];
+}
+
 const showMsg=(message,isError=false)=>{$('message').innerHTML=message?`<div class="${isError?'error':'ok'}">${safe(message)}</div>`:''};
 const toggleSignedIn=on=>{$('authView').classList.toggle('hidden',on);$('mainApp').classList.toggle('hidden',!on);$('nav').classList.toggle('hidden',!on);$('logout').classList.toggle('hidden',!on)};
 async function getData(){
@@ -66,7 +79,7 @@ $('jobList').addEventListener('click',e=>{const b=e.target.closest('button[data-
 $('refresh').addEventListener('click',getData);
 $('loginForm').addEventListener('submit',async e=>{
  e.preventDefault();const b=$('loginButton');b.disabled=true;$('authMessage').textContent='Signing in…';
- try{const {data,error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)throw error;$('password').value='';user=data.user;toggleSignedIn(true);await getData();$('authMessage').textContent=''}
+ try{const {data,error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)throw error;await requireCleaner(data.user);$('password').value='';user=data.user;toggleSignedIn(true);await getData();$('authMessage').textContent=''}
  catch(err){$('authMessage').innerHTML='<div class="error">'+safe(err.message||'Unable to sign in')+'</div>'}finally{b.disabled=false}
 });
 $('resetPassword').addEventListener('click',async()=>{
@@ -76,5 +89,5 @@ $('resetPassword').addEventListener('click',async()=>{
 });
 $('logout').addEventListener('click',async()=>{await sb.auth.signOut();user=null;jobs=[];entries=[];toggleSignedIn(false);$('password').value='';$('authMessage').textContent='Signed out.'});
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('selected',x===b));document.querySelectorAll('#mainApp section').forEach(s=>s.classList.toggle('hidden',s.id!==b.dataset.view))});
-(async()=>{try{const {data,error}=await sb.auth.getUser();if(error&&error.name!=='AuthSessionMissingError')throw error;user=data.user||null;toggleSignedIn(!!user);if(user)await getData()}catch(e){toggleSignedIn(false);$('authMessage').textContent=e.message||'Unable to initialize authentication.'}})();
+(async()=>{try{const {data,error}=await sb.auth.getUser();if(error&&error.name!=='AuthSessionMissingError')throw error;if(data.user){await requireCleaner(data.user);user=data.user;toggleSignedIn(true);await getData()}else{user=null;toggleSignedIn(false)}}catch(e){user=null;toggleSignedIn(false);$('authMessage').innerHTML='<div class="error">'+safe(e.message||'Unable to initialize authentication.')+'</div>'}})();
 </script></body></html>
