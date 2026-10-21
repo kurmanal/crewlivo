@@ -1,42 +1,80 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Crewlivo • Cleaner</title><style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Crewlivo · Employee</title><style>
 :root{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#18313e;background:#f3f7f8}*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer}header{background:#102f39;color:white;padding:23px 18px 19px}main{max-width:650px;margin:auto;padding:18px 16px 110px}.head{max-width:650px;margin:auto}.eyebrow{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#b1d0d0}.brand{display:flex;align-items:center;gap:10px;font-size:25px;font-weight:800}.logo{background:#54d9b2;color:#12343b;border-radius:13px;padding:8px}.topline{display:flex;align-items:center;justify-content:space-between;margin-top:21px}.topline h1{font-size:23px;margin:0}.topline p{margin:5px 0 0;color:#d6e5e9;font-size:13px}select{border:1px solid #ccdadd;background:white;color:#17313e;border-radius:11px;padding:11px;width:100%}.selectwrap{width:180px}.block{background:white;border:1px solid #e0e8eb;border-radius:17px;padding:17px;margin:14px 0;box-shadow:0 3px 12px #17333b0a}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.stat b{font-size:28px}.stat small{display:block;color:#637982;margin-top:5px}.cardtop{display:flex;justify-content:space-between;align-items:center;gap:12px}.cardtop h3{margin:0;font-size:17px}.sub{font-size:13px;color:#59727c;margin-top:6px;line-height:1.5}.pill{font-size:11px;border-radius:50px;padding:6px 9px;white-space:nowrap;background:#eaf0f4;color:#526570;font-weight:700}.pill.active{background:#ddf8ee;color:#096b50}.pill.complete{background:#e6efff;color:#2251a5}.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.btn{background:#103f4c;color:white;border:0;border-radius:11px;padding:11px 14px;font-weight:650;flex:1}.btn.light{background:#eef5f6;color:#1c4c5b}.btn.green{background:#138765}.btn:disabled{background:#d7dfe1;color:#7b8990;cursor:default}.note{font-size:12px;line-height:1.5;color:#647c86}.line{height:1px;background:#e8eef0;margin:13px 0}.sectiontitle{font-size:18px;margin:24px 2px 9px}.empty{padding:25px;text-align:center;color:#748891}.nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #dbe5e7;display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}.navinner{max-width:650px;width:100%;display:flex}.nav button{flex:1;background:none;border:0;padding:13px 5px;color:#70848e;font-weight:650;font-size:13px}.nav button.selected{color:#078066}.hidden{display:none}.field{display:flex;flex-direction:column;gap:5px;margin:12px 0;font-size:13px}.field input{padding:10px;border:1px solid #cbdadd;border-radius:9px} .alert{background:#fff5e8;color:#7a5108;padding:10px 12px;border-radius:10px;font-size:12px;margin-top:10px}
-</style></head><body><header><div class="head"><div class="brand"><span class="logo">✦</span> Crewlivo <span style="font-size:11px;font-weight:500;color:#9ac6c9">FOR CLEANERS</span></div><div class="topline"><div><h1 id="greet">My Jobs</h1><p id="dateText"></p></div><div class="selectwrap"><select id="worker" aria-label="Choose demo cleaner"></select></div></div></div></header><main><div class="alert">Demo mode: choose a cleaner to preview their jobs. This is not a secure employee login, and changes are stored only in this browser.</div><section id="jobsView"><div class="stats"><div class="block stat"><b id="jobCount">0</b><small>Upcoming jobs</small></div><div class="block stat"><b id="hourCount">0h</b><small>Tracked hours</small></div></div><h2 class="sectiontitle">My assigned cleanings</h2><div id="jobList"></div></section><section id="hoursView" class="hidden"><h2 class="sectiontitle">My time entries</h2><div class="block"><div id="timeList"></div></div><p class="note">The owner will be able to review and adjust timesheets. This prototype does not calculate payroll or overtime.</p></section><section id="profileView" class="hidden"><h2 class="sectiontitle">My profile</h2><div class="block" id="profile"></div><p class="note">For security, cleaners should only see their own assignments after we add authenticated accounts and company access rules.</p></section></main><nav class="nav"><div class="navinner"><button class="selected" data-view="jobsView">▣<div>My Jobs</div></button><button data-view="hoursView">◷<div>Hours</div></button><button data-view="profileView">♙<div>Profile</div></button></div></nav>
-<script>
-'use strict';
-const $=id=>document.getElementById(id), KEY='crewlivo-demo-v1', TIMEKEY='crewlivo-cleaner-time-v1';
-const iso=d=>{const a=new Date(d);return `${a.getFullYear()}-${String(a.getMonth()+1).padStart(2,'0')}-${String(a.getDate()).padStart(2,'0')}`};
-const day=iso(new Date()), next=n=>{let d=new Date();d.setDate(d.getDate()+n);return iso(d)};
-const sample={cleaners:[{id:'e1',name:'Maria Santos',phone:'(714) 555-0171',email:'maria@example.com'},{id:'e2',name:'Ana Lopez',phone:'(949) 555-0112'},{id:'e3',name:'James Kim',phone:'(714) 555-0185'}],clients:[{id:'c1',name:'Olivia Martin',address:'Tustin, CA'},{id:'c2',name:'Daniel Rivera',address:'Irvine, CA'},{id:'c3',name:'Sophia Lee',address:'Orange, CA'}],jobs:[{id:'j1',client:'c1',cleaners:['e1','e2'],date:day,start:'09:00',duration:150,status:'scheduled',notes:'Bring eco-friendly supplies'},{id:'j2',client:'c2',cleaners:['e3'],date:day,start:'13:00',duration:120,status:'scheduled'},{id:'j3',client:'c3',cleaners:['e1'],date:next(1),start:'10:00',duration:180,status:'scheduled'}]};
-const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let data;try{data=JSON.parse(localStorage.getItem(KEY))||sample}catch{data=sample}
-if(!Array.isArray(data.cleaners)||!Array.isArray(data.jobs))data=sample;
-let entries;try{entries=JSON.parse(localStorage.getItem(TIMEKEY))||{}}catch{entries={}};
-const store=()=>localStorage.setItem(TIMEKEY,JSON.stringify(entries));
-const fmtDate=d=>new Date(d+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-const fmtClock=t=>new Date('2000-01-01T'+t+':00').toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-const timestamp=t=>new Date(t).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-const duration=e=>e?.in&&e?.out?Math.max(0,Math.round((new Date(e.out)-new Date(e.in))/60000)):0;
-let workerId=sessionStorage.getItem('crewlivo-demo-cleaner')||data.cleaners[0]?.id||'';
-function syncData(){try{let d=JSON.parse(localStorage.getItem(KEY));if(d&&Array.isArray(d.jobs)&&Array.isArray(d.cleaners))data=d}catch{}}
-function render(){syncData();if(!data.cleaners.some(e=>e.id===workerId))workerId=data.cleaners[0]?.id||'';
-$('worker').innerHTML=data.cleaners.map(e=>`<option value="${safe(e.id)}">${safe(e.name)}</option>`).join('');$('worker').value=workerId;
-$('greet').textContent='Hi, '+(data.cleaners.find(e=>e.id===workerId)?.name.split(' ')[0]||'there')+'!';$('dateText').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-const jobs=data.jobs.filter(j=>(j.cleaners||[]).includes(workerId)&&j.status!=='cancelled').sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start));
-$('jobCount').textContent=jobs.filter(j=>j.date>=day&&j.status!=='completed').length;
-const minutes=Object.entries(entries).filter(([k])=>k.startsWith(workerId+'::')).reduce((total,[,v])=>total+duration(v),0);
-$('hourCount').textContent=(minutes/60).toFixed(1)+'h';
-$('jobList').innerHTML=jobs.length?jobs.map(j=>jobCard(j)).join(''):'<div class="block empty">No jobs assigned yet.</div>';
-$('timeList').innerHTML=jobs.filter(j=>entries[workerId+'::'+j.id]).map(j=>{const e=entries[workerId+'::'+j.id];return `<div style="padding:12px 0;border-bottom:1px solid #e5ecee"><b>${safe(client(j).name)}</b><div class="sub">${fmtDate(j.date)} · ${e.in?timestamp(e.in):'—'} → ${e.out?timestamp(e.out):'Not checked out'}</div><div style="margin-top:5px;font-weight:700">${(duration(e)/60).toFixed(2)} hours</div></div>`}).join('')||'<div class="empty">No time entries yet.</div>';
-const w=data.cleaners.find(e=>e.id===workerId)||{};$('profile').innerHTML=`<b>${safe(w.name)}</b><div class="sub">${safe(w.phone||'Phone not set')}<br>${safe(w.email||'Email not set')}<br>${safe([w.street,w.city,w.state,w.zip].filter(Boolean).join(', ')||w.address||'')}</div>`;
+
+#authView{max-width:440px;margin:30px auto}.authhead{margin:0 0 15px}.authhead h2{margin:0 0 5px}#mainApp.hidden,#authView.hidden{display:none}.error{color:#a7292d;background:#fff0f0;border-radius:9px;padding:10px;font-size:13px}.ok{color:#136a50;background:#e9f8f0;border-radius:9px;padding:10px;font-size:13px}.smallbutton{border:0;color:#c1efde;background:transparent;padding:9px}.muted{color:#627985}.load{padding:22px;text-align:center;color:#607781}.field input{width:100%;padding:13px}.btn{min-height:44px}.form-actions{margin-top:15px}.field label{font-weight:600}.link{background:none;border:0;text-decoration:underline;color:#126e62;padding:8px 0}.notice{background:#e7f5f2;color:#1a6658;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.5;margin-bottom:14px}.status{text-align:center;font-size:13px;margin-top:10px;min-height:18px} .hours-row{padding:13px 0;border-bottom:1px solid #e6eeee}.nowrap{white-space:nowrap}
+</style></head><body>
+<header><div class="head"><div class="brand"><span class="logo">✦</span> Crewlivo <span style="font-size:11px;font-weight:500;color:#9ac6c9">FOR CLEANERS</span></div><div class="topline"><div><h1 id="greet">Employee Portal</h1><p id="dateText">Secure employee access</p></div><button id="logout" class="smallbutton hidden" type="button">Sign out</button></div></div></header>
+<main>
+<section id="authView"><div class="block"><div class="authhead"><h2>Sign in</h2><div class="sub">Use the employee email and password created in Crewlivo's Supabase project.</div></div><form id="loginForm"><div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="username" required placeholder="name@example.com"></div><div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div><div class="form-actions"><button id="loginButton" class="btn" type="submit" style="width:100%">Sign in</button></div></form><div id="authMessage" class="status" role="status" aria-live="polite"></div><button class="link" id="resetPassword" type="button">Forgot password?</button></div><p class="note">Only employees linked to a Crewlivo company and assigned to a job can see that job. Do not use real client data until all production security checks are complete.</p></section>
+<div id="mainApp" class="hidden"><div id="message" role="status" aria-live="polite"></div><section id="jobsView"><div class="stats"><div class="block stat"><b id="jobCount">0</b><small>Upcoming jobs</small></div><div class="block stat"><b id="hourCount">0h</b><small>Recorded hours</small></div></div><h2 class="sectiontitle">My assigned cleanings</h2><div id="jobList" class="load">Loading assigned jobs…</div><button id="refresh" class="btn light" style="width:100%">↻ Refresh jobs</button></section><section id="hoursView" class="hidden"><h2 class="sectiontitle">My time entries</h2><div class="block"><div id="timeList"></div></div><p class="note">All timestamps are recorded by the database. Owners will review pay and any timesheet corrections separately.</p></section><section id="profileView" class="hidden"><h2 class="sectiontitle">My profile</h2><div class="block" id="profile"></div></section></div>
+</main><nav class="nav hidden" id="nav"><div class="navinner"><button class="selected" data-view="jobsView">▣<div>My Jobs</div></button><button data-view="hoursView">◷<div>Hours</div></button><button data-view="profileView">♙<div>Profile</div></button></div></nav>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const SUPABASE_URL = 'https://ctkccmfbffqcftowctpp.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_1QZ5w0Vo1vHQXr5G5D4wBg_Qx8vHsEH';
+const sb = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, { auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true} });
+const $=id=>document.getElementById(id);
+const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const datefmt=v=>new Date(v).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+const timefmt=v=>new Date(v).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+const elapsed=t=>t.checked_in_at&&t.checked_out_at?Math.max(0,(new Date(t.checked_out_at)-new Date(t.checked_in_at))/3600000):0;
+let jobs=[], entries=[], user=null, loading=false;
+const showMsg=(message,isError=false)=>{$('message').innerHTML=message?`<div class="${isError?'error':'ok'}">${safe(message)}</div>`:''};
+const toggleSignedIn=on=>{$('authView').classList.toggle('hidden',on);$('mainApp').classList.toggle('hidden',!on);$('nav').classList.toggle('hidden',!on);$('logout').classList.toggle('hidden',!on)};
+async function getData(){
+ if(!user||loading)return;loading=true;showMsg('');$('jobList').innerHTML='<div class="block load">Loading assigned jobs…</div>';
+ try {
+   // Request only non-financial columns that authenticated employees are permitted to read.
+   const jr=await sb.from('jobs').select('id,company_id,service_address,job_type,starts_at,ends_at,cleaning_deadline,status,notes').order('starts_at',{ascending:true});
+   if(jr.error)throw jr.error;
+   jobs=jr.data??[];
+   const tr=await sb.from('time_entries').select('id,job_id,checked_in_at,checked_out_at').order('checked_in_at',{ascending:false});
+   if(tr.error)throw tr.error;
+   entries=tr.data??[];
+   render();
+ } catch(e){jobs=[];entries=[];render();showMsg('Unable to load jobs: '+(e.message||'Unknown error'),true)}
+ finally{loading=false}
 }
-function client(j){return data.clients.find(c=>c.id===j.client)||{name:'Property / customer',address:''}}
-function jobCard(j){const c=client(j),e=entries[workerId+'::'+j.id]||{},active=!!e.in&&!e.out,done=!!e.out;const address=j.serviceAddress||c.address||'';
-const ending=new Date('2000-01-01T'+j.start+':00');ending.setMinutes(ending.getMinutes()+Number(j.duration||120));const end=ending.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-return `<article class="block"><div class="cardtop"><h3>${safe(c.name)}</h3><span class="pill ${active?'active':done?'complete':''}">${active?'In progress':done?'Checked out':j.status==='completed'?'Completed':'Assigned'}</span></div><div class="sub">📅 ${fmtDate(j.date)} · ${fmtClock(j.start)} – ${end}<br>📍 ${safe(address||'Address not provided')}</div>${j.notes?`<div class="sub">📝 ${safe(j.notes)}</div>`:''}<div class="actions"><button class="btn light" onclick="directions('${safe(j.id)}')" ${address?'':'disabled'}>↗ Directions</button>${!e.in?`<button class="btn green" onclick="clockIn('${safe(j.id)}')">Check In</button>`:active?`<button class="btn green" onclick="clockOut('${safe(j.id)}')">I'm Done · Check Out</button>`:`<button class="btn light" disabled>✓ Checked out</button>`}</div>${e.in?`<div class="sub">Checked in: ${timestamp(e.in)} ${e.out?'· Checked out: '+timestamp(e.out)+' · '+(duration(e)/60).toFixed(2)+' hours':''}</div>`:''}</article>`}
-function job(id){return data.jobs.find(j=>j.id===id)}
-function directions(id){const j=job(id);if(!j)return;const address=j.serviceAddress||client(j).address;if(address)window.open('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(address),'_blank','noopener,noreferrer')}
-function clockIn(id){const j=job(id);if(!j||!(j.cleaners||[]).includes(workerId))return;const key=workerId+'::'+id;if(entries[key]?.in)return;entries[key]={in:new Date().toISOString(),out:null};store();render()}
-function clockOut(id){const key=workerId+'::'+id;if(!entries[key]?.in||entries[key].out)return;if(!confirm('Finish this job and record your check-out time?'))return;entries[key].out=new Date().toISOString();store();render()}
-$('worker').onchange=e=>{workerId=e.target.value;sessionStorage.setItem('crewlivo-demo-cleaner',workerId);render()};
-document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('selected',x===b));document.querySelectorAll('main section').forEach(s=>s.classList.toggle('hidden',s.id!==b.dataset.view));render()});render();
+function render(){
+ const now=new Date(), today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+ $('greet').textContent='My Jobs';$('dateText').textContent=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+ $('jobCount').textContent=jobs.filter(j=>new Date(j.starts_at)>=today&&j.status!=='completed'&&j.status!=='cancelled').length;
+ $('hourCount').textContent=(entries.reduce((s,e)=>s+elapsed(e),0)).toFixed(1)+'h';
+ $('jobList').innerHTML=jobs.length?jobs.map(card).join(''):'<div class="block empty">No jobs assigned to your account yet.</div>';
+ $('timeList').innerHTML=entries.length?entries.map(e=>{const j=jobs.find(x=>x.id===e.job_id);return `<div class="hours-row"><b>${safe(j?.service_address||'Assigned job')}</b><div class="sub">${datefmt(e.checked_in_at)} · ${timefmt(e.checked_in_at)} → ${e.checked_out_at?timefmt(e.checked_out_at):'Still checked in'}</div><div style="margin-top:6px;font-weight:700">${elapsed(e).toFixed(2)} hours</div></div>`}).join(''):'<div class="empty">No time entries yet.</div>';
+ $('profile').innerHTML=`<b>${safe(user?.email||'Employee')}</b><div class="sub">Signed in with a secure Supabase account.<br>User ID: ${safe(user?.id||'')}</div>`;
+}
+function card(j){
+ const sessions=entries.filter(t=>t.job_id===j.id),active=sessions.some(t=>!t.checked_out_at),past=sessions.some(t=>!!t.checked_out_at);
+ const status=active?'Checked in':j.status==='completed'?'Completed':past?'Previously checked out':'Assigned';
+ const address=j.service_address||'';
+ return `<article class="block"><div class="cardtop"><h3>${safe(j.job_type||'Cleaning job')}</h3><span class="pill ${active?'active':past?'complete':''}">${safe(status)}</span></div><div class="sub">📅 ${datefmt(j.starts_at)} · ${timefmt(j.starts_at)} – ${timefmt(j.ends_at)}<br>📍 ${safe(address||'Address not provided')}</div>${j.notes?`<div class="sub">📝 ${safe(j.notes)}</div>`:''}${j.cleaning_deadline?`<div class="sub">⏱ Deadline: ${datefmt(j.cleaning_deadline)} ${timefmt(j.cleaning_deadline)}</div>`:''}<div class="actions">${address?`<button class="btn light" data-action="directions" data-id="${safe(j.id)}">↗ Directions</button>`:''}<button class="btn green" data-action="${active?'checkout':'checkin'}" data-id="${safe(j.id)}">${active?'Check Out':'Check In'}</button></div>${active?`<div class="sub">Checked in at ${timefmt(sessions.find(t=>!t.checked_out_at).checked_in_at)}</div>`:''}</article>`;
+}
+async function act(action,id,button){
+ const j=jobs.find(x=>x.id===id);if(!j)return;
+ if(action==='directions'){if(j.service_address)window.open('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(j.service_address),'_blank','noopener,noreferrer');return}
+ if(action==='checkout'&&!confirm('Check out of this job and record your end time?'))return;
+ button.disabled=true;button.textContent='Please wait…';showMsg('');
+ try{
+   const fn=action==='checkout'?'cleaner_check_out':'cleaner_check_in';
+   const result=await sb.rpc(fn,{p_job_id:id});if(result.error)throw result.error;
+   showMsg(action==='checkout'?'Checked out successfully.':'Checked in successfully.');
+   await getData();
+ }catch(e){showMsg((action==='checkout'?'Check Out':'Check In')+' failed: '+(e.message||'Unknown error'),true);button.disabled=false;button.textContent=action==='checkout'?'Check Out':'Check In'}
+}
+$('jobList').addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(b)act(b.dataset.action,b.dataset.id,b)});
+$('refresh').addEventListener('click',getData);
+$('loginForm').addEventListener('submit',async e=>{
+ e.preventDefault();const b=$('loginButton');b.disabled=true;$('authMessage').textContent='Signing in…';
+ try{const {data,error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)throw error;$('password').value='';user=data.user;toggleSignedIn(true);await getData();$('authMessage').textContent=''}
+ catch(err){$('authMessage').innerHTML='<div class="error">'+safe(err.message||'Unable to sign in')+'</div>'}finally{b.disabled=false}
+});
+$('resetPassword').addEventListener('click',async()=>{
+ const email=$('email').value.trim();if(!email){$('authMessage').textContent='Enter your email address first.';return}
+ const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+ $('authMessage').textContent=error?error.message:'If this email is registered, a password-reset email may be sent. Follow the link in your inbox.';
+});
+$('logout').addEventListener('click',async()=>{await sb.auth.signOut();user=null;jobs=[];entries=[];toggleSignedIn(false);$('password').value='';$('authMessage').textContent='Signed out.'});
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('selected',x===b));document.querySelectorAll('#mainApp section').forEach(s=>s.classList.toggle('hidden',s.id!==b.dataset.view))});
+(async()=>{try{const {data,error}=await sb.auth.getUser();if(error&&error.name!=='AuthSessionMissingError')throw error;user=data.user||null;toggleSignedIn(!!user);if(user)await getData()}catch(e){toggleSignedIn(false);$('authMessage').textContent=e.message||'Unable to initialize authentication.'}})();
 </script></body></html>
