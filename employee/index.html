@@ -2,12 +2,15 @@
 :root{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#18313e;background:#f3f7f8}*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer}header{background:#102f39;color:white;padding:23px 18px 19px}main{max-width:650px;margin:auto;padding:18px 16px 110px}.head{max-width:650px;margin:auto}.eyebrow{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#b1d0d0}.brand{display:flex;align-items:center;gap:10px;font-size:25px;font-weight:800}.logo{background:#54d9b2;color:#12343b;border-radius:13px;padding:8px}.topline{display:flex;align-items:center;justify-content:space-between;margin-top:21px}.topline h1{font-size:23px;margin:0}.topline p{margin:5px 0 0;color:#d6e5e9;font-size:13px}select{border:1px solid #ccdadd;background:white;color:#17313e;border-radius:11px;padding:11px;width:100%}.selectwrap{width:180px}.block{background:white;border:1px solid #e0e8eb;border-radius:17px;padding:17px;margin:14px 0;box-shadow:0 3px 12px #17333b0a}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.stat b{font-size:28px}.stat small{display:block;color:#637982;margin-top:5px}.cardtop{display:flex;justify-content:space-between;align-items:center;gap:12px}.cardtop h3{margin:0;font-size:17px}.sub{font-size:13px;color:#59727c;margin-top:6px;line-height:1.5}.pill{font-size:11px;border-radius:50px;padding:6px 9px;white-space:nowrap;background:#eaf0f4;color:#526570;font-weight:700}.pill.active{background:#ddf8ee;color:#096b50}.pill.complete{background:#e6efff;color:#2251a5}.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.btn{background:#103f4c;color:white;border:0;border-radius:11px;padding:11px 14px;font-weight:650;flex:1}.btn.light{background:#eef5f6;color:#1c4c5b}.btn.green{background:#138765}.btn:disabled{background:#d7dfe1;color:#7b8990;cursor:default}.note{font-size:12px;line-height:1.5;color:#647c86}.line{height:1px;background:#e8eef0;margin:13px 0}.sectiontitle{font-size:18px;margin:24px 2px 9px}.empty{padding:25px;text-align:center;color:#748891}.nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #dbe5e7;display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}.navinner{max-width:650px;width:100%;display:flex}.nav button{flex:1;background:none;border:0;padding:13px 5px;color:#70848e;font-weight:650;font-size:13px}.nav button.selected{color:#078066}.hidden{display:none}.field{display:flex;flex-direction:column;gap:5px;margin:12px 0;font-size:13px}.field input{padding:10px;border:1px solid #cbdadd;border-radius:9px} .alert{background:#fff5e8;color:#7a5108;padding:10px 12px;border-radius:10px;font-size:12px;margin-top:10px}
 
 #authView{max-width:440px;margin:30px auto}.authhead{margin:0 0 15px}.authhead h2{margin:0 0 5px}#mainApp.hidden,#authView.hidden{display:none}.error{color:#a7292d;background:#fff0f0;border-radius:9px;padding:10px;font-size:13px}.ok{color:#136a50;background:#e9f8f0;border-radius:9px;padding:10px;font-size:13px}.smallbutton{border:0;color:#c1efde;background:transparent;padding:9px}.muted{color:#627985}.load{padding:22px;text-align:center;color:#607781}.field input{width:100%;padding:13px}.btn{min-height:44px}.form-actions{margin-top:15px}.field label{font-weight:600}.link{background:none;border:0;text-decoration:underline;color:#126e62;padding:8px 0}.notice{background:#e7f5f2;color:#1a6658;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.5;margin-bottom:14px}.status{text-align:center;font-size:13px;margin-top:10px;min-height:18px} .hours-row{padding:13px 0;border-bottom:1px solid #e6eeee}.nowrap{white-space:nowrap}
+
+/* Employee availability editor */
+.av-row{border:1px solid #e1eaeb;border-radius:12px;padding:12px;margin:9px 0;background:#fff}.av-day{display:flex;align-items:center;justify-content:space-between;gap:8px}.av-window{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:8px 0;border-top:1px solid #eef3f4;margin-top:8px}.av-window select{width:auto;max-width:140px;flex:1;padding:9px}.av-window label{font-size:12px;color:#526873}.av-window input[type=checkbox]{width:auto}.av-msg{font-size:13px;margin-top:10px}.av-off{border-bottom:1px solid #e9eff0;padding:11px 0;display:flex;justify-content:space-between;gap:8px}.av-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}.av-actions .btn{flex:0 1 auto}.av-hint{font-size:12px;color:#667982;line-height:1.6}
 </style></head><body>
 <header><div class="head"><div class="brand"><span class="logo">✦</span> Crewlivo <span style="font-size:11px;font-weight:500;color:#9ac6c9">FOR CLEANERS</span></div><div id="employeeAccount" class="hidden" style="font-size:12px;color:#cce6e4;margin-top:12px;overflow-wrap:anywhere"></div><div class="topline"><div><h1 id="greet">Employee Portal</h1><p id="dateText">Secure employee access</p></div><button id="logout" class="smallbutton hidden" type="button" style="border:1px solid #91c2ba;border-radius:9px;padding:10px 14px;font-weight:700">Sign Out</button></div></div></header>
 <main>
 <section id="authView"><div class="block"><div class="authhead"><h2>Sign in</h2><div class="sub">Use the employee email and password created in Crewlivo's Supabase project.</div></div><form id="loginForm"><div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="username" required placeholder="name@example.com"></div><div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div><div class="form-actions"><button id="loginButton" class="btn" type="submit" style="width:100%">Sign in</button></div></form><div id="authMessage" class="status" role="status" aria-live="polite"></div><button class="link" id="resetPassword" type="button">Forgot password?</button></div><div id="recoveryView" class="block hidden"><h2>Create a new password</h2><p class="sub">Enter a new password for your Crewlivo employee account.</p><form id="recoveryForm"><div class="field"><label for="newPassword">New password (12+ characters)</label><input id="newPassword" type="password" minlength="12" autocomplete="new-password" required></div><div class="field"><label for="confirmPassword">Confirm new password</label><input id="confirmPassword" type="password" minlength="12" autocomplete="new-password" required></div><button id="savePassword" class="btn" type="submit" style="width:100%">Save new password</button></form><div id="recoveryMessage" class="status" aria-live="polite"></div><button id="returnToLogin" type="button" class="link">Back to sign in</button><div class="sub">Are you a company owner? <a href="../">Open Owner Dashboard</a></div></div><p class="note">Only employees linked to a Crewlivo company and assigned to a job can see that job. Do not use real client data until all production security checks are complete.</p></section>
-<div id="mainApp" class="hidden"><div id="message" role="status" aria-live="polite"></div><section id="jobsView"><div class="stats"><div class="block stat"><b id="jobCount">0</b><small>Upcoming jobs</small></div><div class="block stat"><b id="hourCount">0h</b><small>Recorded hours</small></div></div><h2 class="sectiontitle">My assigned cleanings</h2><div id="jobList" class="load">Loading assigned jobs…</div><button id="refresh" class="btn light" style="width:100%">↻ Refresh jobs</button></section><section id="hoursView" class="hidden"><h2 class="sectiontitle">My time entries</h2><div class="block"><div id="timeList"></div></div><p class="note">All timestamps are recorded by the database. Owners will review pay and any timesheet corrections separately.</p></section><section id="profileView" class="hidden"><h2 class="sectiontitle">My profile</h2><div class="block" id="profile"></div></section></div>
-</main><nav class="nav hidden" id="nav"><div class="navinner"><button class="selected" data-view="jobsView">▣<div>My Jobs</div></button><button data-view="hoursView">◷<div>Hours</div></button><button data-view="profileView">♙<div>Profile</div></button></div></nav>
+<div id="mainApp" class="hidden"><div id="message" role="status" aria-live="polite"></div><section id="jobsView"><div class="stats"><div class="block stat"><b id="jobCount">0</b><small>Upcoming jobs</small></div><div class="block stat"><b id="hourCount">0h</b><small>Recorded hours</small></div></div><h2 class="sectiontitle">My assigned cleanings</h2><div id="jobList" class="load">Loading assigned jobs…</div><button id="refresh" class="btn light" style="width:100%">↻ Refresh jobs</button></section><section id="hoursView" class="hidden"><h2 class="sectiontitle">My time entries</h2><div class="block"><div id="timeList"></div></div><p class="note">All timestamps are recorded by the database. Owners will review pay and any timesheet corrections separately.</p></section><section id="availabilityView" class="hidden"><h2 class="sectiontitle">My Availability</h2><p class="note">Your personal schedule applies across the cleaning companies you work for. Set multiple windows per day, including overnight hours. Changes here do not cancel jobs already assigned to you.</p><div id="availabilityStatus" role="status" aria-live="polite"></div><div class="block"><h3>Weekly schedule</h3><p class="av-hint">Unchecked days are unavailable. Select times in 15-minute increments. For a window ending the following day, select “Next day”.</p><div id="weeklyAvailability">Loading schedule…</div><button id="saveAvailability" class="btn green" type="button" style="width:100%;margin-top:12px">Save weekly availability</button></div><div class="block"><h3>Holidays &amp; time off</h3><p class="av-hint">Entire days blocked. These dates override your weekly schedule.</p><form id="timeOffForm"><div class="field"><label for="offStart">From date</label><input id="offStart" type="date" required></div><div class="field"><label for="offEnd">Through date (inclusive)</label><input id="offEnd" type="date" required></div><div class="field"><label for="offReason">Label (optional)</label><input id="offReason" maxlength="160" placeholder="Holiday, vacation, personal day"></div><button type="submit" class="btn green" style="width:100%">Add unavailable dates</button></form><div id="timeOffList" style="margin-top:15px"></div></div></section><section id="profileView" class="hidden"><h2 class="sectiontitle">My profile</h2><div class="block" id="profile"></div></section></div>
+</main><nav class="nav hidden" id="nav"><div class="navinner"><button class="selected" data-view="jobsView">▣<div>My Jobs</div></button><button data-view="hoursView">◷<div>Hours</div></button><button data-view="availabilityView">▦<div>Availability</div></button><button data-view="profileView">♙<div>Profile</div></button></div></nav>
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 const SUPABASE_URL = 'https://ctkccmfbffqcftowctpp.supabase.co';
@@ -122,6 +125,96 @@ async function act(action,id,button){
 }
 $('jobList').addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(b)act(b.dataset.action,b.dataset.id,b)});
 $('refresh').addEventListener('click',getData);
+
+// Availability is personal to auth.uid() and stored under RLS policies.
+const AV_DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const AV_TIMES=Array.from({length:96},(_,i)=>`${String(Math.floor(i/4)).padStart(2,'0')}:${String(i%4*15).padStart(2,'0')}`);
+const avFormat=t=>{const [h,m]=t.split(':').map(Number);return `${h%12||12}:${String(m).padStart(2,'0')} ${h<12?'AM':'PM'}`};
+const avOptions=t=>AV_TIMES.map(v=>`<option value="${v}" ${v===t?'selected':''}>${avFormat(v)}</option>`).join('');
+let avWeekly=[],avOff=[],avLoaded=false;
+const avStatus=(s,bad=false)=>{$('availabilityStatus').innerHTML=s?`<div class="${bad?'error':'ok'}">${safe(s)}</div>`:''};
+function renderAvailability(){
+ $('weeklyAvailability').innerHTML=AV_DAYS.map((day,d)=>{
+   const windows=avWeekly.filter(w=>w.day_of_week===d);
+   return `<div class="av-row" data-day="${d}"><div class="av-day"><label><input type="checkbox" class="av-enabled" ${windows.length?'checked':''}> <b>${day}</b></label><small>${windows.length?'Available':'Unavailable'}</small></div><div class="av-windows">${windows.map(w=>avWindow(w)).join('')}</div><div class="av-actions"><button class="btn light av-add" type="button">+ Add time window</button></div></div>`;
+ }).join('');
+ // Dates are treated as local calendar labels (not UTC instants).
+ $('timeOffList').innerHTML=avOff.length?avOff.map(o=>`<div class="av-off"><div><b>${safe(o.start_date)} → ${safe(o.end_date)}</b><div class="sub">${safe(o.reason||'Unavailable')}</div></div><button class="btn light av-delete" data-id="${safe(o.id)}" type="button">Remove</button></div>`).join(''):'<p class="note">No unavailable dates added yet.</p>';
+}
+function avWindow(w={start_time:'09:00',end_time:'17:00',overnight:false}){
+ const start=String(w.start_time).slice(0,5),end=String(w.end_time).slice(0,5);
+ return `<div class="av-window"><label>From <select class="av-start">${avOptions(start)}</select></label><label>Until <select class="av-end">${avOptions(end)}</select></label><label><input type="checkbox" class="av-overnight" ${w.overnight?'checked':''}> Next day</label><button type="button" class="btn light av-remove">×</button></div>`;
+}
+async function loadAvailability(){
+ if(!user)return;
+ avStatus('');$('weeklyAvailability').textContent='Loading schedule…';
+ const [a,b]=await Promise.all([
+   sb.from('cleaner_weekly_availability').select('id,day_of_week,start_time,end_time,overnight').eq('user_id',user.id).order('day_of_week').order('start_time'),
+   sb.from('cleaner_time_off').select('id,start_date,end_date,reason').eq('user_id',user.id).order('start_date')
+ ]);
+ if(a.error||b.error){$('weeklyAvailability').textContent='Could not load availability.';avStatus((a.error||b.error).message,true);return}
+ avWeekly=a.data||[];avOff=b.data||[];avLoaded=true;renderAvailability();
+}
+$('weeklyAvailability').addEventListener('change',e=>{
+ if(e.target.classList.contains('av-enabled')){
+  const row=e.target.closest('.av-row');row.querySelector('.av-windows').innerHTML=e.target.checked?avWindow():'';
+  row.querySelector('small').textContent=e.target.checked?'Available':'Unavailable';
+ }
+});
+$('weeklyAvailability').addEventListener('click',e=>{
+ const row=e.target.closest('.av-row');if(!row)return;
+ if(e.target.closest('.av-add')){
+  row.querySelector('.av-enabled').checked=true;row.querySelector('small').textContent='Available';
+  row.querySelector('.av-windows').insertAdjacentHTML('beforeend',avWindow());
+ }
+ if(e.target.closest('.av-remove')){
+  e.target.closest('.av-window').remove();
+  if(!row.querySelector('.av-window')){row.querySelector('.av-enabled').checked=false;row.querySelector('small').textContent='Unavailable'}
+ }
+});
+$('saveAvailability').addEventListener('click',async()=>{
+ if(!user||!avLoaded)return;
+ const rows=[];
+ for(const day of document.querySelectorAll('.av-row')){
+  if(!day.querySelector('.av-enabled').checked)continue;
+  for(const w of day.querySelectorAll('.av-window')){
+   const start=w.querySelector('.av-start').value,end=w.querySelector('.av-end').value,overnight=w.querySelector('.av-overnight').checked;
+   if((!overnight&&end<=start)||(overnight&&end>start)){
+    avStatus(`Invalid window on ${AV_DAYS[Number(day.dataset.day)]}. Choose a later end time, or select Next day for overnight work.`,true);return;
+   }
+   rows.push({user_id:user.id,day_of_week:Number(day.dataset.day),start_time:start,end_time:end,overnight});
+  }
+ }
+ // Reject overlapping intervals, including overlaps reaching the next calendar day.
+ const intervals=[];
+ rows.forEach(r=>{const [sh,sm]=r.start_time.split(':').map(Number),[eh,em]=r.end_time.split(':').map(Number);const base=r.day_of_week*1440;intervals.push([base+sh*60+sm,base+eh*60+em+(r.overnight?1440:0)]);});
+ const spans=intervals.concat(intervals.map(x=>[x[0]+10080,x[1]+10080]),intervals.map(x=>[x[0]-10080,x[1]-10080]));
+ for(let i=0;i<intervals.length;i++)for(let j=0;j<spans.length;j++){
+  if(j===i)continue;
+  if(intervals[i][0]<spans[j][1]&&spans[j][0]<intervals[i][1]){avStatus('Some availability windows overlap. Please adjust them before saving.',true);return;}
+ }
+ const btn=$('saveAvailability');btn.disabled=true;avStatus('Saving…');
+ try{
+  // Current policies permit user-owned rows only. Restore previous rows if insertion fails.
+  const {error:delErr}=await sb.from('cleaner_weekly_availability').delete().eq('user_id',user.id);if(delErr)throw delErr;
+  if(rows.length){const {error}=await sb.from('cleaner_weekly_availability').insert(rows);if(error){if(avWeekly.length)await sb.from('cleaner_weekly_availability').insert(avWeekly.map(({id,...rest})=>({...rest,user_id:user.id})));throw error;}}
+  avStatus('Weekly availability saved.');await loadAvailability();avStatus('Weekly availability saved.');
+ }catch(e){avStatus('Could not save schedule: '+e.message,true)}finally{btn.disabled=false}
+});
+$('timeOffForm').addEventListener('submit',async e=>{
+ e.preventDefault();if(!user)return;
+ const start=$('offStart').value,end=$('offEnd').value;
+ if(!start||!end||end<start){avStatus('End date must be on or after start date.',true);return}
+ const {error}=await sb.from('cleaner_time_off').insert({user_id:user.id,start_date:start,end_date:end,reason:$('offReason').value.trim()||null});
+ if(error){avStatus('Could not add time off: '+error.message,true);return}
+ $('timeOffForm').reset();await loadAvailability();avStatus('Unavailable dates saved.');
+});
+$('timeOffList').addEventListener('click',async e=>{
+ const btn=e.target.closest('.av-delete');if(!btn||!user)return;
+ if(!confirm('Remove these unavailable dates?'))return;
+ const {error}=await sb.from('cleaner_time_off').delete().eq('id',btn.dataset.id).eq('user_id',user.id);
+ if(error){avStatus(error.message,true);return}await loadAvailability();avStatus('Time off removed.');
+});
 $('loginForm').addEventListener('submit',async e=>{
  e.preventDefault();const b=$('loginButton');b.disabled=true;$('authMessage').textContent='Signing in…';
  try{const {data,error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)throw error;await requireCleaner(data.user);$('password').value='';user=data.user;toggleSignedIn(true);await getData();$('authMessage').textContent=''}
@@ -133,7 +226,7 @@ $('resetPassword').addEventListener('click',async()=>{
  $('authMessage').textContent=error?(String(error.message||'').toLowerCase().includes('rate limit')?'Too many recovery emails have been requested. Please wait for the limit to reset before trying again.':error.message):'If this email is registered, a password-reset email may be sent. Follow the link in your inbox.';
 });
 $('logout').addEventListener('click',async()=>{await sb.auth.signOut();user=null;jobs=[];entries=[];toggleSignedIn(false);$('password').value='';$('authMessage').textContent='Signed out.'});
-document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('selected',x===b));document.querySelectorAll('#mainApp section').forEach(s=>s.classList.toggle('hidden',s.id!==b.dataset.view))});
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{if(b.dataset.view==='availabilityView')loadAvailability();document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('selected',x===b));document.querySelectorAll('#mainApp section').forEach(s=>s.classList.toggle('hidden',s.id!==b.dataset.view))});
 (async()=>{try{
  const {data,error}=await sb.auth.getUser();
  if(recoveryMode)return;
