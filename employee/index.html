@@ -3,9 +3,9 @@
 
 #authView{max-width:440px;margin:30px auto}.authhead{margin:0 0 15px}.authhead h2{margin:0 0 5px}#mainApp.hidden,#authView.hidden{display:none}.error{color:#a7292d;background:#fff0f0;border-radius:9px;padding:10px;font-size:13px}.ok{color:#136a50;background:#e9f8f0;border-radius:9px;padding:10px;font-size:13px}.smallbutton{border:0;color:#c1efde;background:transparent;padding:9px}.muted{color:#627985}.load{padding:22px;text-align:center;color:#607781}.field input{width:100%;padding:13px}.btn{min-height:44px}.form-actions{margin-top:15px}.field label{font-weight:600}.link{background:none;border:0;text-decoration:underline;color:#126e62;padding:8px 0}.notice{background:#e7f5f2;color:#1a6658;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.5;margin-bottom:14px}.status{text-align:center;font-size:13px;margin-top:10px;min-height:18px} .hours-row{padding:13px 0;border-bottom:1px solid #e6eeee}.nowrap{white-space:nowrap}
 </style></head><body>
-<header><div class="head"><div class="brand"><span class="logo">✦</span> Crewlivo <span style="font-size:11px;font-weight:500;color:#9ac6c9">FOR CLEANERS</span></div><div class="topline"><div><h1 id="greet">Employee Portal</h1><p id="dateText">Secure employee access</p></div><button id="logout" class="smallbutton hidden" type="button">Sign out</button></div></div></header>
+<header><div class="head"><div class="brand"><span class="logo">✦</span> Crewlivo <span style="font-size:11px;font-weight:500;color:#9ac6c9">FOR CLEANERS</span></div><div id="employeeAccount" class="hidden" style="font-size:12px;color:#cce6e4;margin-top:12px;overflow-wrap:anywhere"></div><div class="topline"><div><h1 id="greet">Employee Portal</h1><p id="dateText">Secure employee access</p></div><button id="logout" class="smallbutton hidden" type="button" style="border:1px solid #91c2ba;border-radius:9px;padding:10px 14px;font-weight:700">Sign Out</button></div></div></header>
 <main>
-<section id="authView"><div class="block"><div class="authhead"><h2>Sign in</h2><div class="sub">Use the employee email and password created in Crewlivo's Supabase project.</div></div><form id="loginForm"><div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="username" required placeholder="name@example.com"></div><div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div><div class="form-actions"><button id="loginButton" class="btn" type="submit" style="width:100%">Sign in</button></div></form><div id="authMessage" class="status" role="status" aria-live="polite"></div><button class="link" id="resetPassword" type="button">Forgot password?</button><div class="sub">Are you a company owner? <a href="../">Open Owner Dashboard</a></div></div><p class="note">Only employees linked to a Crewlivo company and assigned to a job can see that job. Do not use real client data until all production security checks are complete.</p></section>
+<section id="authView"><div class="block"><div class="authhead"><h2>Sign in</h2><div class="sub">Use the employee email and password created in Crewlivo's Supabase project.</div></div><form id="loginForm"><div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="username" required placeholder="name@example.com"></div><div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div><div class="form-actions"><button id="loginButton" class="btn" type="submit" style="width:100%">Sign in</button></div></form><div id="authMessage" class="status" role="status" aria-live="polite"></div><button class="link" id="resetPassword" type="button">Forgot password?</button></div><div id="recoveryView" class="block hidden"><h2>Create a new password</h2><p class="sub">Enter a new password for your Crewlivo employee account.</p><form id="recoveryForm"><div class="field"><label for="newPassword">New password (12+ characters)</label><input id="newPassword" type="password" minlength="12" autocomplete="new-password" required></div><div class="field"><label for="confirmPassword">Confirm new password</label><input id="confirmPassword" type="password" minlength="12" autocomplete="new-password" required></div><button id="savePassword" class="btn" type="submit" style="width:100%">Save new password</button></form><div id="recoveryMessage" class="status" aria-live="polite"></div><button id="returnToLogin" type="button" class="link">Back to sign in</button><div class="sub">Are you a company owner? <a href="../">Open Owner Dashboard</a></div></div><p class="note">Only employees linked to a Crewlivo company and assigned to a job can see that job. Do not use real client data until all production security checks are complete.</p></section>
 <div id="mainApp" class="hidden"><div id="message" role="status" aria-live="polite"></div><section id="jobsView"><div class="stats"><div class="block stat"><b id="jobCount">0</b><small>Upcoming jobs</small></div><div class="block stat"><b id="hourCount">0h</b><small>Recorded hours</small></div></div><h2 class="sectiontitle">My assigned cleanings</h2><div id="jobList" class="load">Loading assigned jobs…</div><button id="refresh" class="btn light" style="width:100%">↻ Refresh jobs</button></section><section id="hoursView" class="hidden"><h2 class="sectiontitle">My time entries</h2><div class="block"><div id="timeList"></div></div><p class="note">All timestamps are recorded by the database. Owners will review pay and any timesheet corrections separately.</p></section><section id="profileView" class="hidden"><h2 class="sectiontitle">My profile</h2><div class="block" id="profile"></div></section></div>
 </main><nav class="nav hidden" id="nav"><div class="navinner"><button class="selected" data-view="jobsView">▣<div>My Jobs</div></button><button data-view="hoursView">◷<div>Hours</div></button><button data-view="profileView">♙<div>Profile</div></button></div></nav>
 <script type="module">
@@ -33,7 +33,52 @@ async function requireCleaner(account) {
 }
 
 const showMsg=(message,isError=false)=>{$('message').innerHTML=message?`<div class="${isError?'error':'ok'}">${safe(message)}</div>`:''};
-const toggleSignedIn=on=>{$('authView').classList.toggle('hidden',on);$('mainApp').classList.toggle('hidden',!on);$('nav').classList.toggle('hidden',!on);$('logout').classList.toggle('hidden',!on)};
+const toggleSignedIn=on=>{$('authView').classList.toggle('hidden',on);$('mainApp').classList.toggle('hidden',!on);$('nav').classList.toggle('hidden',!on);$('logout').classList.toggle('hidden',!on);$('employeeAccount').classList.toggle('hidden',!on);$('employeeAccount').textContent=on&&user?'Signed in as '+user.email+' · Cleaner':''};
+let recoveryMode = false;
+const recoveryFromURL = new URLSearchParams(location.search).get('type') === 'recovery' || /(?:^|[&#])type=recovery(?:&|$)/.test(location.hash) || new URLSearchParams(location.search).has('code');
+function showRecovery(){
+ recoveryMode=true;toggleSignedIn(false);
+ $('loginForm').closest('.block').classList.add('hidden');
+ $('recoveryView').classList.remove('hidden');
+ $('greet').textContent='Reset your password';
+ $('dateText').textContent='Secure password recovery';
+}
+function showLogin(message=''){
+ recoveryMode=false;user=null;toggleSignedIn(false);
+ $('loginForm').closest('.block').classList.remove('hidden');
+ $('recoveryView').classList.add('hidden');
+ $('authMessage').textContent=message;
+ $('greet').textContent='Employee Portal';
+ $('dateText').textContent='Secure employee access';
+}
+// Supabase emits PASSWORD_RECOVERY after validating an email recovery link.
+sb.auth.onAuthStateChange((event)=>{
+ if(event==='PASSWORD_RECOVERY') showRecovery();
+});
+// A recovery callback can supply an authorization code rather than a hash token.
+// Hold the sign-in screen until URL token processing has finished.
+if(recoveryFromURL) showRecovery();
+$('recoveryForm').addEventListener('submit', async e=>{
+ e.preventDefault();
+ const password=$('newPassword').value,confirm=$('confirmPassword').value;
+ const msg=$('recoveryMessage');
+ if(password.length<12){msg.textContent='Use at least 12 characters.';return;}
+ if(password!==confirm){msg.textContent='Passwords do not match.';return;}
+ const button=$('savePassword');button.disabled=true;msg.textContent='Saving your password…';
+ try{
+  const {data:{session},error:sessionError}=await sb.auth.getSession();
+  if(sessionError||!session)throw new Error('Your recovery link is invalid or expired. Request a new link once the email limit resets.');
+  const {error}=await sb.auth.updateUser({password});
+  if(error)throw error;
+  await sb.auth.signOut();
+  history.replaceState(null,'',location.pathname);
+  $('newPassword').value='';$('confirmPassword').value='';
+  msg.textContent='';showLogin('Password updated successfully. Sign in with your new password.');
+ }catch(err){msg.textContent=err.message||'Unable to update password.';}
+ finally{button.disabled=false;}
+});
+$('returnToLogin').addEventListener('click',()=>{history.replaceState(null,'',location.pathname);showLogin();});
+
 async function getData(){
  if(!user||loading)return;loading=true;showMsg('');$('jobList').innerHTML='<div class="block load">Loading assigned jobs…</div>';
  try {
@@ -55,7 +100,7 @@ function render(){
  $('hourCount').textContent=(entries.reduce((s,e)=>s+elapsed(e),0)).toFixed(1)+'h';
  $('jobList').innerHTML=jobs.length?jobs.map(card).join(''):'<div class="block empty">No jobs assigned to your account yet.</div>';
  $('timeList').innerHTML=entries.length?entries.map(e=>{const j=jobs.find(x=>x.id===e.job_id);return `<div class="hours-row"><b>${safe(j?.service_address||'Assigned job')}</b><div class="sub">${datefmt(e.checked_in_at)} · ${timefmt(e.checked_in_at)} → ${e.checked_out_at?timefmt(e.checked_out_at):'Still checked in'}</div><div style="margin-top:6px;font-weight:700">${elapsed(e).toFixed(2)} hours</div></div>`}).join(''):'<div class="empty">No time entries yet.</div>';
- $('profile').innerHTML=`<b>${safe(user?.email||'Employee')}</b><div class="sub">Signed in with a secure Supabase account.<br>User ID: ${safe(user?.id||'')}</div>`;
+ $('profile').innerHTML=`<b>${safe(user?.email||'Employee')}</b><div class="sub">Role: Cleaner<br>Signed in with a secure Supabase account.</div>`;
 }
 function card(j){
  const sessions=entries.filter(t=>t.job_id===j.id),active=sessions.some(t=>!t.checked_out_at),past=sessions.some(t=>!!t.checked_out_at);
@@ -84,10 +129,16 @@ $('loginForm').addEventListener('submit',async e=>{
 });
 $('resetPassword').addEventListener('click',async()=>{
  const email=$('email').value.trim();if(!email){$('authMessage').textContent='Enter your email address first.';return}
- const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
- $('authMessage').textContent=error?error.message:'If this email is registered, a password-reset email may be sent. Follow the link in your inbox.';
+ const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:new URL('./',location.href).href});
+ $('authMessage').textContent=error?(String(error.message||'').toLowerCase().includes('rate limit')?'Too many recovery emails have been requested. Please wait for the limit to reset before trying again.':error.message):'If this email is registered, a password-reset email may be sent. Follow the link in your inbox.';
 });
 $('logout').addEventListener('click',async()=>{await sb.auth.signOut();user=null;jobs=[];entries=[];toggleSignedIn(false);$('password').value='';$('authMessage').textContent='Signed out.'});
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('selected',x===b));document.querySelectorAll('#mainApp section').forEach(s=>s.classList.toggle('hidden',s.id!==b.dataset.view))});
-(async()=>{try{const {data,error}=await sb.auth.getUser();if(error&&error.name!=='AuthSessionMissingError')throw error;if(data.user){await requireCleaner(data.user);user=data.user;toggleSignedIn(true);await getData()}else{user=null;toggleSignedIn(false)}}catch(e){user=null;toggleSignedIn(false);$('authMessage').innerHTML='<div class="error">'+safe(e.message||'Unable to initialize authentication.')+'</div>'}})();
+(async()=>{try{
+ const {data,error}=await sb.auth.getUser();
+ if(recoveryMode)return;
+ if(error&&error.name!=='AuthSessionMissingError')throw error;
+ if(data.user){await requireCleaner(data.user);user=data.user;toggleSignedIn(true);await getData()}
+ else showLogin();
+ }catch(e){if(recoveryMode)return;showLogin();$('authMessage').innerHTML='<div class="error">'+safe(e.message||'Unable to initialize authentication.')+'</div>'}})();
 </script></body></html>
