@@ -20,7 +20,9 @@ jobs:
             'https://ctkccmfbffqcftowctpp.supabase.co/rest/v1/cleaners?select=id&limit=1' \
             -H 'apikey: sb_publishable_1QZ5w0Vo1vHQXr5G5D4wBg_Qx8vHsEH')
           echo "HTTP $code"; head -c 300 /tmp/out.txt; echo
-          if [ "$code" != "200" ]; then echo "Supabase did not answer 200 (paused?)"; exit 1; fi
+          # 200 = data read; 401 with Postgres code 42501 = the query reached the database
+          # (anonymous users may not read this table, which is fine). Either one is activity.
+          if [ "$code" = "200" ] || grep -q '"42501"' /tmp/out.txt; then echo "Database answered - OK"; else echo "Database did not answer (paused?)"; exit 1; fi
 
       # GitHub turns off scheduled workflows in repos with no commits for 60 days.
       # Once in a while, record the last ping date so the schedule keeps running.
