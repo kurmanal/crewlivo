@@ -1,0 +1,39 @@
+# Keeps the free Supabase project (Crewlivo-production) from being paused for inactivity.
+# Every 3 days it makes one small read request to the database. It changes no data.
+name: Supabase keep-alive
+
+on:
+  schedule:
+    - cron: '17 6 */3 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase
+        run: |
+          code=$(curl -s -o /tmp/out.txt -w '%{http_code}' --max-time 30 \
+            'https://ctkccmfbffqcftowctpp.supabase.co/rest/v1/cleaners?select=id&limit=1' \
+            -H 'apikey: sb_publishable_1QZ5w0Vo1vHQXr5G5D4wBg_Qx8vHsEH')
+          echo "HTTP $code"; head -c 300 /tmp/out.txt; echo
+          if [ "$code" != "200" ]; then echo "Supabase did not answer 200 (paused?)"; exit 1; fi
+
+      # GitHub turns off scheduled workflows in repos with no commits for 60 days.
+      # Once in a while, record the last ping date so the schedule keeps running.
+      - uses: actions/checkout@v4
+      - name: Keep the schedule enabled
+        run: |
+          last=$(git log -1 --format=%ct)
+          now=$(date +%s)
+          if [ $(( (now - last) / 86400 )) -ge 45 ]; then
+            date -u +%Y-%m-%dT%H:%M:%SZ > .github/keepalive-last.txt
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add .github/keepalive-last.txt
+            git commit -m 'chore: keep-alive timestamp'
+            git push
+          fi
